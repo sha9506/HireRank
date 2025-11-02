@@ -1,0 +1,316 @@
+/* ResultsSection.css - Results section component styles */
+
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Score Card */
+.score-card {
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  border: 2px solid;
+  transition: all 0.3s;
+}
+
+.score-card-content {
+  text-align: center;
+}
+
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 9999px;
+  background-color: white;
+  margin-bottom: 1rem;
+}
+
+.dark .score-badge {
+  background-color: rgb(31, 41, 55);
+}
+
+.score-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.score-label {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.score-filename {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+
+/* Score variants */
+.score-card.excellent {
+  color: rgb(22, 163, 74);
+  background-color: rgb(220, 252, 231);
+  border-color: currentColor;
+}
+
+.dark .score-card.excellent {
+  color: rgb(134, 239, 172);
+  background-color: rgba(20, 83, 45, 0.3);
+}
+
+.score-card.good {
+  color: rgb(37, 99, 235);
+  background-color: rgb(219, 234, 254);
+  border-color: currentColor;
+}
+
+.dark .score-card.good {
+  color: rgb(96, 165, 250);
+  background-color: rgba(30, 58, 138, 0.3);
+}
+
+.score-card.moderate {
+  color: rgb(202, 138, 4);
+  background-color: rgb(254, 249, 195);
+  border-color: currentColor;
+}
+
+.dark .score-card.moderate {
+  color: rgb(250, 204, 21);
+  background-color: rgba(133, 77, 14, 0.3);
+}
+
+.score-card.low {
+  color: rgb(220, 38, 38);
+  background-color: rgb(254, 226, 226);
+  border-color: currentColor;
+}
+
+.dark .score-card.low {
+  color: rgb(248, 113, 113);
+  background-color: rgba(127, 29, 29, 0.3);
+}
+
+/* Info Card */
+.info-card {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: all 0.3s;
+}
+
+.dark .info-card {
+  background-color: rgb(31, 41, 55);
+}
+
+.info-card-header {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.info-card-header svg {
+  margin-right: 0.5rem;
+}
+
+.info-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.info-icon {
+  margin-top: 0.25rem;
+  margin-right: 0.75rem;
+  color: rgb(156, 163, 175);
+  flex-shrink: 0;
+}
+
+.info-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(107, 114, 128);
+}
+
+.dark .info-label {
+  color: rgb(156, 163, 175);
+}
+
+.info-value {
+  color: rgb(17, 24, 39);
+}
+
+.dark .info-value {
+  color: rgb(243, 244, 246);
+}
+
+/* Summary Card */
+.summary-card {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: all 0.3s;
+}
+
+.dark .summary-card {
+  background-color: rgb(31, 41, 55);
+}
+
+.summary-header {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.summary-header svg {
+  margin-right: 0.5rem;
+  color: rgb(37, 99, 235);
+}
+
+.dark .summary-header svg {
+  color: rgb(96, 165, 250);
+}
+
+.summary-text {
+  color: rgb(55, 65, 81);
+  line-height: 1.625;
+}
+
+.dark .summary-text {
+  color: rgb(209, 213, 219);
+}
+
+/* Skills Card */
+.skills-card {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: all 0.3s;
+}
+
+.dark .skills-card {
+  background-color: rgb(31, 41, 55);
+}
+
+.skills-header {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skill-tag {
+  padding: 0.25rem 0.75rem;
+  background-color: rgb(219, 234, 254);
+  color: rgb(29, 78, 216);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.dark .skill-tag {
+  background-color: rgba(30, 58, 138, 0.3);
+  color: rgb(147, 197, 253);
+}
+
+.no-skills {
+  color: rgb(107, 114, 128);
+  font-size: 0.875rem;
+}
+
+.dark .no-skills {
+  color: rgb(156, 163, 175);
+}
+
+/* Metadata Card */
+.metadata-card {
+  background-color: rgb(249, 250, 251);
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: all 0.3s;
+}
+
+.dark .metadata-card {
+  background-color: rgba(31, 41, 55, 0.5);
+}
+
+.metadata-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: rgb(107, 114, 128);
+}
+
+.dark .metadata-content {
+  color: rgb(156, 163, 175);
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  background-color: rgb(229, 231, 235);
+  color: rgb(17, 24, 39);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: rgb(209, 213, 219);
+}
+
+.dark .btn-secondary {
+  background-color: rgb(55, 65, 81);
+  color: rgb(243, 244, 246);
+}
+
+.dark .btn-secondary:hover {
+  background-color: rgb(75, 85, 99);
+}
+
+.btn-primary {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  background-color: rgb(37, 99, 235);
+  color: white;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: rgb(29, 78, 216);
+}

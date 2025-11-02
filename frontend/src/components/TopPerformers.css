@@ -1,0 +1,240 @@
+.top-performers-container {
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+}
+
+.dark .top-performers-container {
+  background: linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%);
+}
+
+.top-performers-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.top-performers-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.top-performers-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+.performers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.performer-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .performer-card {
+  background: #1f2937;
+}
+
+.performer-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.performer-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.trophy-gold::before {
+  background: linear-gradient(90deg, #ffd700, #ffed4e);
+}
+
+.trophy-silver::before {
+  background: linear-gradient(90deg, #c0c0c0, #e8e8e8);
+}
+
+.trophy-bronze::before {
+  background: linear-gradient(90deg, #cd7f32, #e6a85c);
+}
+
+.performer-rank {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.trophy-icon {
+  font-size: 2rem;
+}
+
+.rank-number {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.dark .rank-number {
+  color: #a78bfa;
+}
+
+.performer-info {
+  margin-bottom: 1.5rem;
+}
+
+.performer-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.dark .performer-name {
+  color: #f9fafb;
+}
+
+.performer-title {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.dark .performer-title {
+  color: #9ca3af;
+}
+
+.performer-score {
+  margin-bottom: 1.5rem;
+}
+
+.score-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.score-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.score-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.dark .score-label {
+  color: #9ca3af;
+}
+
+.performer-skills {
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.dark .performer-skills {
+  border-top-color: #374151;
+}
+
+.skills-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.dark .skills-label {
+  color: #9ca3af;
+}
+
+.skills-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skill-tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.dark .skill-tag {
+  background: #374151;
+  color: #d1d5db;
+}
+
+.skill-tag.more {
+  background: #667eea;
+  color: white;
+}
+
+.dark .skill-tag.more {
+  background: #7c3aed;
+}
+
+.top-performers-loading,
+.top-performers-error,
+.top-performers-empty {
+  text-align: center;
+  padding: 3rem;
+  color: white;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .top-performers-container {
+    padding: 1.5rem;
+  }
+  
+  .performers-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .top-performers-title {
+    font-size: 1.5rem;
+  }
+}

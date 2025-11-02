@@ -1,0 +1,13 @@
+.dashboard-layout {
+  min-height: 100vh;
+  background: #f9fafb;
+}
+
+.dark .dashboard-layout {
+  background: #111827;
+}
+
+.dashboard-content {
+  width: 100%;
+  overflow-y: auto;
+}
