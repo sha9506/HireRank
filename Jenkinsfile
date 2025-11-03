@@ -3,9 +3,10 @@ pipeline {
     
     environment {
         DOCKER_REGISTRY = 'docker.io'
+        DOCKER_USERNAME = 'sh9506'
         DOCKER_CREDENTIALS = credentials('docker-hub-credentials')
-        BACKEND_IMAGE = 'hirerank-backend'
-        FRONTEND_IMAGE = 'hirerank-frontend'
+        BACKEND_IMAGE = "${DOCKER_USERNAME}/hirerank-backend"
+        FRONTEND_IMAGE = "${DOCKER_USERNAME}/hirerank-frontend"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
     

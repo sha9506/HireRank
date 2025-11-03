@@ -3,6 +3,9 @@ HireRank Backend API
 FastAPI server for resume ranking and analysis
 """
 
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -14,6 +17,7 @@ from datetime import datetime
 from models.resume_processor import ResumeProcessor
 from models.nlp_analyzer import NLPAnalyzer
 from models.database import Database
+from models.gemini_analyzer import GeminiResumeAnalyzer
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -39,6 +43,7 @@ app.add_middleware(
 resume_processor = ResumeProcessor()
 nlp_analyzer = NLPAnalyzer()
 database = Database()
+gemini_analyzer = GeminiResumeAnalyzer()
 
 
 @app.on_event("startup")
@@ -279,6 +284,42 @@ async def analyze_resume(
             match_score
         )
         
+        # Calculate skills found and missing for better frontend display
+        resume_skills_lower = [s.lower() for s in resume_skills]
+        expected_skills_lower = [s.lower() for s in expected_skills]
+        
+        skills_found = [s for s in expected_skills if s.lower() in resume_skills_lower]
+        skills_missing = [s for s in expected_skills if s.lower() not in resume_skills_lower]
+        
+        # 🧩 NEW: Role-based skill stack analysis
+        logger.info("Performing role-based skill stack analysis...")
+        skill_stack_analysis = nlp_analyzer.analyze_role_skills(resume_skills, job_title)
+        skill_summary = nlp_analyzer.summarize_skill_match(resume_skills, job_title)
+        is_role_match = nlp_analyzer.is_role_match(resume_skills, job_title)
+        skill_coverage = nlp_analyzer.get_skill_coverage_percentage(resume_skills, job_title)
+        
+        # 🤖 NEW: Gemini AI Analysis with dynamic job role understanding
+        gemini_analysis = None
+        try:
+            logger.info("Performing Gemini AI analysis with job context...")
+            resume_json = {
+                "name": candidate_name,
+                "skills": resume_skills,
+                "experience": candidate_info.get("experience", []),
+                "education": candidate_info.get("education", []),
+                "certifications": candidate_info.get("certifications", [])
+            }
+            # Pass job_title and job_description for intelligent analysis
+            gemini_analysis = gemini_analyzer.analyze_resume_with_gemini(
+                resume_json, 
+                job_title=job_title,
+                job_description=job_description
+            )
+            logger.info(f"Gemini AI analysis completed - Role: {gemini_analysis.get('matched_role')}")
+        except Exception as e:
+            logger.warning(f"Gemini AI analysis failed: {str(e)}")
+            # Continue without Gemini analysis
+        
         # Store in database
         logger.info("Storing results in database...")
         doc_id = await database.store_analysis(
@@ -289,7 +330,10 @@ async def analyze_resume(
             match_score=round(match_score, 2),
             summary=summary,
             candidate_info=candidate_info,
-            job_description=job_description
+            job_description=job_description,
+            skills_found=skills_found,
+            skills_missing=skills_missing,
+            expected_skills=expected_skills
         )
         
         # Prepare result
@@ -299,11 +343,27 @@ async def analyze_resume(
             "job_title": job_title,
             "match_score": round(match_score, 2),
             "skills": resume_skills,
+            "skills_found": skills_found,
+            "skills_missing": skills_missing,
             "expected_skills": expected_skills,
             "summary": summary,
             "candidate_info": candidate_info,
+            "contact_info": {
+                "email": candidate_info.get("email", "Not found"),
+                "phone": candidate_info.get("phone", "Not found")
+            },
+            "education": candidate_info.get("education", []),
+            "experience": candidate_info.get("experience", []),
+            "certifications": candidate_info.get("certifications", []),
             "resume_filename": resume.filename,
-            "uploaded_at": datetime.utcnow().isoformat()
+            "uploaded_at": datetime.utcnow().isoformat(),
+            # 🧩 NEW: Role-based skill stack data
+            "skill_stack_analysis": skill_stack_analysis,
+            "skill_summary": skill_summary,
+            "is_role_match": is_role_match,
+            "skill_coverage": skill_coverage,
+            # 🤖 NEW: Gemini AI Analysis
+            "gemini_analysis": gemini_analysis
         }
         
         logger.info(f"Analysis completed successfully. Match score: {match_score}%")

@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: backend
-        image: hirerank-backend:latest
-        imagePullPolicy: IfNotPresent
+        image: sh9506/hirerank-backend:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
           name: http

@@ -1,16 +1,16 @@
 import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Header from './components/Header'
-import UploadSection from './components/UploadSection'
-import ResultsSection from './components/ResultsSection'
-import LoadingSpinner from './components/LoadingSpinner'
-import TopPerformers from './components/TopPerformers'
-import Dashboard from './components/Dashboard'
-import Leaderboard from './components/Leaderboard'
-import History from './components/History'
-import CandidateDetails from './components/CandidateDetails'
-import CandidatesList from './components/CandidatesList'
-import AnalyzingPage from './components/AnalyzingPage'
+import Header from './components/Layout/Header'
+import UploadSection from './components/Upload/UploadSection'
+import ResultsSection from './components/Results/ResultsSection'
+import LoadingSpinner from './components/Common/LoadingSpinner'
+import TopPerformers from './components/Dashboard/TopPerformers'
+import Dashboard from './components/Dashboard/Dashboard'
+import Leaderboard from './components/Dashboard/Leaderboard'
+import History from './components/Dashboard/History'
+import CandidateDetails from './components/Results/CandidateDetails'
+import CandidatesList from './components/Results/CandidatesList'
+import AnalyzingPage from './components/Upload/AnalyzingPage'
 import { ThemeProvider } from './context/ThemeContext'
 import './App.css'
 
@@ -52,12 +52,14 @@ function HomePage() {
       <main className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Hero Section */}
         <div className="text-center mb-12">
-          <h1 className="hero-title">HireRank</h1>
+          <h1 className="hero-title">
+            HireRank
+          </h1>
           <p className="hero-subtitle">
-            AI-Powered Resume Ranking & Talent Screening Platform
+            Resume Ranking & Talent Screening Platform
           </p>
           <p className="hero-description">
-            Upload resumes and get instant AI-driven insights on candidate fit
+            Upload resumes and get instant insights on candidate fit
           </p>
         </div>
 

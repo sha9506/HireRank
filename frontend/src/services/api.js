@@ -1,13 +1,19 @@
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+// Use VITE_API_BASE_URL (new standard) or fall back to VITE_API_URL (legacy)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    // Skip ngrok browser warning (required for ngrok free tier)
+    'ngrok-skip-browser-warning': 'true',
   },
 })
+
+// Log the API URL being used (helpful for debugging)
+console.log('🔗 API Base URL:', API_BASE_URL)
 
 // Legacy endpoint for backward compatibility
 export const rankResume = async (resumeFile, jobDescription, jobId = null) => {

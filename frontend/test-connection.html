@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Connection Test</title>
+</head>
+<body>
+    <h1>Testing API Connection</h1>
+    <button onclick="testLocal()">Test Local (localhost:8000)</button>
+    <button onclick="testNgrok()">Test Ngrok</button>
+    <div id="result"></div>
+
+    <script>
+        async function testLocal() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing localhost:8000...';
+            try {
+                const response = await fetch('http://localhost:8000/health');
+                const data = await response.json();
+                result.innerHTML = `<pre style="color: green;">LOCAL SUCCESS:\n${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<pre style="color: red;">LOCAL ERROR:\n${error.message}</pre>`;
+            }
+        }
+
+        async function testNgrok() {
+            const result = document.getElementById('result');
+            const ngrokUrl = 'https://overtolerantly-vadose-lorene.ngrok-free.dev';
+            result.innerHTML = `Testing ${ngrokUrl}...`;
+            try {
+                const response = await fetch(`${ngrokUrl}/health`);
+                const data = await response.json();
+                result.innerHTML = `<pre style="color: green;">NGROK SUCCESS:\n${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<pre style="color: red;">NGROK ERROR:\n${error.message}\n\nThis might be because ngrok free tier requires clicking through a warning page first.</pre>`;
+            }
+        }
+    </script>
+</body>
+</html>

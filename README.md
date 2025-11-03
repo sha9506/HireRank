@@ -50,6 +50,7 @@ MongoDB    NLP Models
   - sentence-transformers (all-MiniLM-L6-v2)
   - transformers (BART for summarization)
   - PyTorch
+  - **Google Gemini AI** (for advanced resume analysis)
 - **ASGI Server**: Uvicorn
 
 ### DevOps
@@ -63,44 +64,77 @@ MongoDB    NLP Models
 ```
 HireRank/
 ├── backend/
-│   ├── main.py                 # FastAPI application entry point
+│   ├── main.py                    # FastAPI application entry point
+│   ├── test_dynamic_gemini.py     # Gemini AI integration tests
 │   ├── models/
 │   │   ├── __init__.py
-│   │   ├── resume_processor.py # Resume text extraction
-│   │   ├── nlp_analyzer.py     # NLP analysis & similarity
-│   │   └── database.py         # MongoDB operations
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── .env.example
+│   │   ├── resume_processor.py    # Resume text extraction (PDF/DOCX)
+│   │   ├── nlp_analyzer.py        # NLP analysis & similarity scoring
+│   │   ├── gemini_analyzer.py     # Google Gemini AI integration
+│   │   └── database.py            # MongoDB operations
+│   ├── requirements.txt           # Python dependencies
+│   ├── Dockerfile                 # Backend container image
+│   ├── .env.example               # Environment variables template
+│   └── .venv/                     # Python virtual environment
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── Header.jsx
-│   │   │   ├── UploadSection.jsx
-│   │   │   ├── ResultsSection.jsx
-│   │   │   └── LoadingSpinner.jsx
+│   │   │   ├── Common/
+│   │   │   │   ├── LoadingSpinner.jsx
+│   │   │   │   ├── LoadingSpinner.css
+│   │   │   │   ├── ProgressBar.jsx
+│   │   │   │   └── ProgressBar.css
+│   │   │   ├── Dashboard/
+│   │   │   │   ├── Dashboard.jsx
+│   │   │   │   ├── Dashboard.css
+│   │   │   │   ├── History.jsx
+│   │   │   │   ├── History.css
+│   │   │   │   ├── Leaderboard.jsx
+│   │   │   │   ├── Leaderboard.css
+│   │   │   │   ├── TopPerformers.jsx
+│   │   │   │   └── TopPerformers.css
+│   │   │   ├── Layout/
+│   │   │   │   ├── Header.jsx
+│   │   │   │   └── Header.css
+│   │   │   ├── Results/
+│   │   │   │   ├── ResultsSection.jsx
+│   │   │   │   ├── ResultsSection.css
+│   │   │   │   ├── CandidatesList.jsx
+│   │   │   │   ├── CandidatesList.css
+│   │   │   │   ├── CandidateDetails.jsx
+│   │   │   │   └── CandidateDetails.css
+│   │   │   └── Upload/
+│   │   │       ├── UploadSection.jsx
+│   │   │       ├── UploadSection.css
+│   │   │       ├── AnalyzingPage.jsx
+│   │   │       └── AnalyzingPage.css
 │   │   ├── context/
-│   │   │   └── ThemeContext.jsx
+│   │   │   └── ThemeContext.jsx   # Dark/Light theme management
 │   │   ├── services/
-│   │   │   └── api.js
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── tailwind.config.js
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   └── .env.example
+│   │   │   └── api.js             # Axios API client
+│   │   ├── App.jsx                # Main application component
+│   │   ├── App.css
+│   │   ├── main.jsx               # React entry point
+│   │   └── index.css              # Global styles
+│   ├── package.json               # Node.js dependencies
+│   ├── vite.config.js             # Vite bundler config
+│   ├── tailwind.config.js         # TailwindCSS config
+│   ├── postcss.config.js          # PostCSS config
+│   ├── Dockerfile                 # Frontend container image
+│   ├── nginx.conf                 # Nginx web server config
+│   ├── index.html                 # HTML entry point
+│   └── .env.example               # Environment variables template
 ├── deploy/
-│   ├── backend-deployment.yaml
-│   ├── frontend-deployment.yaml
-│   ├── mongo-deployment.yaml
-│   ├── services.yaml
-│   └── ingress.yaml
-├── docker-compose.yml
-├── Jenkinsfile
-└── README.md
+│   ├── backend-deployment.yaml    # Kubernetes backend deployment
+│   ├── frontend-deployment.yaml   # Kubernetes frontend deployment
+│   ├── mongo-deployment.yaml      # Kubernetes MongoDB deployment
+│   ├── services.yaml              # Kubernetes services
+│   └── ingress.yaml               # Kubernetes ingress rules
+├── docker-compose.yml             # Multi-container Docker setup
+├── Jenkinsfile                    # CI/CD pipeline configuration
+├── DYNAMIC_GEMINI_GUIDE.md        # Gemini AI integration guide
+├── .gitignore                     # Git ignore rules
+└── README.md                      # This file
 ```
 
 ## 🚀 Quick Start
@@ -112,6 +146,7 @@ HireRank/
 - Python 3.11+ (for local backend development)
 - MongoDB (or use Docker)
 - Kubernetes cluster (Minikube/Docker Desktop/AWS EKS) for K8s deployment
+- ngrok account (for public URL access) - [Sign up here](https://dashboard.ngrok.com/signup)
 
 ### Option 1: Docker Compose (Recommended for Development)
 
@@ -155,6 +190,8 @@ HireRank/
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
+   # Add your Google Gemini API key: GEMINI_API_KEY=your_key_here
+   # Get API key from: https://makersuite.google.com/app/apikey
    ```
 
 5. **Start MongoDB** (if not using Docker)
@@ -166,6 +203,37 @@ HireRank/
    ```bash
    python main.py
    ```
+   
+   Backend will be available at: http://localhost:8000
+
+#### Expose Backend Publicly with ngrok (Optional)
+
+If you want to make your local backend accessible over the internet:
+
+1. **Install ngrok**
+   ```bash
+   # macOS
+   brew install ngrok
+   
+   # Or download from https://ngrok.com/download
+   ```
+
+2. **Authenticate ngrok**
+   ```bash
+   ngrok config add-authtoken YOUR_AUTHTOKEN
+   # Get your authtoken from: https://dashboard.ngrok.com/get-started/your-authtoken
+   ```
+
+3. **Start ngrok tunnel**
+   ```bash
+   ngrok http 8000
+   ```
+   
+   This will provide a public HTTPS URL (e.g., `https://xyz.ngrok-free.dev`) that forwards to your local backend.
+
+4. **Monitor requests**
+   - Access the ngrok web interface at: http://127.0.0.1:4040
+   - View real-time request logs and replay requests
 
 #### Frontend Setup
 
@@ -283,11 +351,14 @@ MONGODB_DATABASE=hirerank
 API_HOST=0.0.0.0
 API_PORT=8000
 LOG_LEVEL=INFO
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 #### Frontend (.env)
 ```env
 VITE_API_URL=http://localhost:8000
+# Or use your ngrok URL for public access:
+# VITE_API_URL=https://your-ngrok-url.ngrok-free.dev
 ```
 
 ## 📊 Features in Detail
@@ -310,6 +381,17 @@ VITE_API_URL=http://localhost:8000
 - Detailed results with visualizations
 
 ## 🚀 Deployment
+
+### Development/Demo with ngrok
+
+For quick demos or testing with external access:
+
+1. Start your backend locally: `python backend/main.py`
+2. Start ngrok tunnel: `ngrok http 8000`
+3. Update frontend API URL to use the ngrok URL
+4. Share the ngrok URL with testers/clients
+
+**Note:** Free ngrok URLs change on each restart. For persistent URLs, consider upgrading to ngrok's paid plan.
 
 ### AWS EKS
 ```bash
@@ -345,13 +427,15 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👥 Authors
 
-- **Your Name** - Initial work
+- **Sabnam Begum** - Initial work - [@sha9506](https://github.com/sha9506)
 
 ## 🙏 Acknowledgments
 
+- Google Gemini AI for advanced resume analysis capabilities
 - HuggingFace for the amazing Transformers library
 - FastAPI for the modern Python web framework
 - React team for the excellent frontend library
+- ngrok for easy tunneling and public URL generation
 - The open-source community
 
 ## 📧 Contact
@@ -360,16 +444,29 @@ Project Link: [https://github.com/sha9506/HireRank](https://github.com/sha9506/H
 
 ## 🗺️ Roadmap
 
+### Completed ✅
+- [x] Google Gemini AI integration for advanced resume analysis
+- [x] Dynamic skill extraction and matching
+- [x] Candidate information parsing
+- [x] Real-time analysis with progress tracking
+- [x] Dark/Light theme support
+- [x] Docker and Kubernetes deployment
+- [x] ngrok integration for public demos
+
+### In Progress 🚧
 - [ ] JWT authentication for recruiters
 - [ ] Role-based access control (HR, Admin)
+- [ ] Advanced analytics dashboard
+
+### Planned 📋
 - [ ] Email notifications for top candidates
 - [ ] Bulk resume processing
 - [ ] Resume comparison feature
-- [ ] Advanced analytics dashboard
 - [ ] Export reports (PDF, Excel)
 - [ ] Integration with ATS systems
 - [ ] Multi-language support
 - [ ] Resume feedback system
+- [ ] Candidate portal for application tracking
 
 ---
 

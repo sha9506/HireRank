@@ -75,7 +75,10 @@ class Database:
         match_score: float,
         summary: str,
         candidate_info: Dict[str, Any],
-        job_description: Optional[str] = None
+        job_description: Optional[str] = None,
+        skills_found: Optional[List[str]] = None,
+        skills_missing: Optional[List[str]] = None,
+        expected_skills: Optional[List[str]] = None
     ) -> str:
         """
         Store resume analysis results in rankings collection
@@ -99,9 +102,20 @@ class Database:
                 "job_title": job_title,
                 "resume_filename": resume_filename,
                 "skills": skills,
+                "skills_found": skills_found or [],
+                "skills_missing": skills_missing or [],
+                "expected_skills": expected_skills or [],
                 "match_score": match_score,
                 "summary": summary,
                 "candidate_info": candidate_info,
+                "contact_info": {
+                    "email": candidate_info.get("email", "Not found"),
+                    "phone": candidate_info.get("phone", "Not found")
+                },
+                "education": candidate_info.get("education", []),
+                "experience": candidate_info.get("experience", []),
+                "certifications": candidate_info.get("certifications", []),
+                "experience_years": candidate_info.get("experience_years", "Not specified"),
                 "job_description": job_description or "",
                 "remarks": "",
                 "uploaded_at": datetime.utcnow()
@@ -144,7 +158,7 @@ class Database:
     
     async def get_rankings(self, job_title: Optional[str] = None, limit: int = 100) -> List[Dict[str, Any]]:
         """
-        Get ranked candidates sorted by match score
+        Get ranked candidates sorted by match score with calculated skills
         
         Args:
             job_title: Optional filter by job title
@@ -160,6 +174,20 @@ class Database:
             rankings = []
             async for doc in cursor:
                 doc["_id"] = str(doc["_id"])
+                
+                # Calculate skills_found and skills_missing if not present
+                if "skills_found" not in doc or "skills_missing" not in doc:
+                    resume_skills = doc.get("skills", [])
+                    expected_skills = doc.get("expected_skills", [])
+                    
+                    if resume_skills and expected_skills:
+                        resume_skills_lower = [s.lower() for s in resume_skills]
+                        doc["skills_found"] = [s for s in expected_skills if s.lower() in resume_skills_lower]
+                        doc["skills_missing"] = [s for s in expected_skills if s.lower() not in resume_skills_lower]
+                    else:
+                        doc["skills_found"] = resume_skills
+                        doc["skills_missing"] = []
+                
                 rankings.append(doc)
             
             return rankings
@@ -170,7 +198,7 @@ class Database:
     
     async def get_history(self, limit: int = 100) -> List[Dict[str, Any]]:
         """
-        Get chronological history of all resume analyses
+        Get chronological history of all resume analyses with calculated skills
         
         Args:
             limit: Maximum number of results to return
@@ -184,6 +212,20 @@ class Database:
             history = []
             async for doc in cursor:
                 doc["_id"] = str(doc["_id"])
+                
+                # Calculate skills_found and skills_missing if not present
+                if "skills_found" not in doc or "skills_missing" not in doc:
+                    resume_skills = doc.get("skills", [])
+                    expected_skills = doc.get("expected_skills", [])
+                    
+                    if resume_skills and expected_skills:
+                        resume_skills_lower = [s.lower() for s in resume_skills]
+                        doc["skills_found"] = [s for s in expected_skills if s.lower() in resume_skills_lower]
+                        doc["skills_missing"] = [s for s in expected_skills if s.lower() not in resume_skills_lower]
+                    else:
+                        doc["skills_found"] = resume_skills
+                        doc["skills_missing"] = []
+                
                 history.append(doc)
             
             return history
@@ -368,7 +410,7 @@ class Database:
     
     async def get_candidate_by_id(self, candidate_id: str) -> Optional[Dict[str, Any]]:
         """
-        Get a single candidate by ID
+        Get a single candidate by ID with calculated skills_found and skills_missing
         
         Args:
             candidate_id: Candidate document ID
@@ -380,6 +422,21 @@ class Database:
             doc = await self.rankings_collection.find_one({"_id": ObjectId(candidate_id)})
             if doc:
                 doc["_id"] = str(doc["_id"])
+                
+                # Calculate skills_found and skills_missing if not present (backward compatibility)
+                if "skills_found" not in doc or "skills_missing" not in doc:
+                    resume_skills = doc.get("skills", [])
+                    expected_skills = doc.get("expected_skills", [])
+                    
+                    if resume_skills and expected_skills:
+                        resume_skills_lower = [s.lower() for s in resume_skills]
+                        
+                        doc["skills_found"] = [s for s in expected_skills if s.lower() in resume_skills_lower]
+                        doc["skills_missing"] = [s for s in expected_skills if s.lower() not in resume_skills_lower]
+                    else:
+                        doc["skills_found"] = resume_skills
+                        doc["skills_missing"] = []
+                
             return doc
         except Exception as e:
             logger.error(f"Error fetching candidate: {e}")
