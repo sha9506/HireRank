@@ -71,12 +71,19 @@ pipeline {
         }
         
         stage('Deploy to S3') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
             steps {
                 withCredentials([
                     string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
                     string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
                     sh '''
+                    apk add --no-cache aws-cli
                     cd frontend
                     npm install
                     npm run build
