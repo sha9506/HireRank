@@ -70,6 +70,20 @@ pipeline {
             }
         }
         
+        stage('Deploy to S3') {
+            steps {
+                withAWS(region: 'ap-south-1', credentials: 'aws-jenkins-creds') {
+                    sh '''
+                    cd frontend
+                    npm install
+                    npm run build
+                    aws s3 sync build/ s3://your-s3-bucket-name --delete
+                    echo "Check your site at: http://your-s3-bucket-name.s3-website-ap-south-1.amazonaws.com"
+                    '''
+                }
+            }
+        }
+        
         stage('Deploy to Kubernetes') {
             when {
                 branch 'main'
@@ -104,6 +118,7 @@ pipeline {
             }
         }
     }
+
     
     post {
         success {
