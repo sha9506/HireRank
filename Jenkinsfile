@@ -59,11 +59,14 @@ pipeline {
             steps {
                 echo 'Pushing images to Docker registry...'
                 script {
-                    docker.withRegistry("${DOCKER_REGISTRY}", 'docker-hub-credentials') {
-                        docker.image("${BACKEND_IMAGE}:${IMAGE_TAG}").push()
-                        docker.image("${BACKEND_IMAGE}:latest").push()
-                        docker.image("${FRONTEND_IMAGE}:${IMAGE_TAG}").push()
-                        docker.image("${FRONTEND_IMAGE}:latest").push()
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh '''
+                            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                            docker push ${BACKEND_IMAGE}:${IMAGE_TAG}
+                            docker push ${BACKEND_IMAGE}:latest
+                            docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}
+                            docker push ${FRONTEND_IMAGE}:latest
+                        '''
                     }
                 }
             }
