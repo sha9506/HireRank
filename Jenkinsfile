@@ -56,9 +56,6 @@ pipeline {
         }
         
         stage('Push to Registry') {
-            when {
-                branch 'main'
-            }
             steps {
                 echo 'Pushing images to Docker registry...'
                 script {
@@ -99,9 +96,6 @@ pipeline {
         }
         
         stage('Deploy to Kubernetes') {
-            when {
-                branch 'main'
-            }
             steps {
                 echo 'Deploying to Kubernetes...'
                 sh '''
@@ -119,9 +113,6 @@ pipeline {
         }
         
         stage('Health Check') {
-            when {
-                branch 'main'
-            }
             steps {
                 echo 'Performing health checks...'
                 sh '''
