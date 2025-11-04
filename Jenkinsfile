@@ -8,6 +8,8 @@ pipeline {
         BACKEND_IMAGE = "${DOCKER_USERNAME}/hirerank-backend"
         FRONTEND_IMAGE = "${DOCKER_USERNAME}/hirerank-frontend"
         IMAGE_TAG = "${BUILD_NUMBER}"
+        // Backend API URL - ngrok tunnel for backend service
+        BACKEND_API_URL = 'https://overtolerantly-vadose-lorene.ngrok-free.dev'
     }
     
     stages {
@@ -86,6 +88,7 @@ pipeline {
                     apk add --no-cache aws-cli
                     cd frontend
                     npm install
+                    echo "VITE_API_BASE_URL=${BACKEND_API_URL:-http://localhost:8000}" > .env
                     npm run build
                     export AWS_DEFAULT_REGION=ap-south-1
                     aws s3 sync dist/ s3://hirerank-devops --delete
