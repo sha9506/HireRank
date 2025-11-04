@@ -61,11 +61,31 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh '''
-                            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                            docker push ${BACKEND_IMAGE}:${IMAGE_TAG}
-                            docker push ${BACKEND_IMAGE}:latest
-                            docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}
-                            docker push ${FRONTEND_IMAGE}:latest
+                            # Login to Docker Hub with retry
+                            for i in 1 2 3; do
+                                echo "Login attempt $i..."
+                                if echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin; then
+                                    break
+                                fi
+                                sleep 5
+                            done
+                            
+                            # Push images with retry logic
+                            for i in 1 2 3; do
+                                echo "Push attempt $i for backend..."
+                                if docker push ${BACKEND_IMAGE}:${IMAGE_TAG} && docker push ${BACKEND_IMAGE}:latest; then
+                                    break
+                                fi
+                                sleep 5
+                            done
+                            
+                            for i in 1 2 3; do
+                                echo "Push attempt $i for frontend..."
+                                if docker push ${FRONTEND_IMAGE}:${IMAGE_TAG} && docker push ${FRONTEND_IMAGE}:latest; then
+                                    break
+                                fi
+                                sleep 5
+                            done
                         '''
                     }
                 }
