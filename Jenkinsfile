@@ -72,11 +72,15 @@ pipeline {
         
         stage('Deploy to S3') {
             steps {
-                withAWS(region: 'ap-south-1', credentials: 'aws-jenkins-creds') {
+                withCredentials([
+                    string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
                     sh '''
                     cd frontend
                     npm install
                     npm run build
+                    export AWS_DEFAULT_REGION=ap-south-1
                     aws s3 sync build/ s3://your-s3-bucket-name --delete
                     echo "Check your site at: http://your-s3-bucket-name.s3-website-ap-south-1.amazonaws.com"
                     '''
