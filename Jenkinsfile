@@ -24,9 +24,11 @@ pipeline {
             steps {
                 echo 'Building backend Docker image...'
                 dir('backend') {
-                    script {
-                        docker.build("${BACKEND_IMAGE}:${IMAGE_TAG}")
-                        docker.build("${BACKEND_IMAGE}:latest")
+                    retry(3) {
+                        script {
+                            docker.build("${BACKEND_IMAGE}:${IMAGE_TAG}")
+                            docker.build("${BACKEND_IMAGE}:latest")
+                        }
                     }
                 }
             }
@@ -36,9 +38,11 @@ pipeline {
             steps {
                 echo 'Building frontend Docker image...'
                 dir('frontend') {
-                    script {
-                        docker.build("${FRONTEND_IMAGE}:${IMAGE_TAG}")
-                        docker.build("${FRONTEND_IMAGE}:latest")
+                    retry(3) {
+                        script {
+                            docker.build("${FRONTEND_IMAGE}:${IMAGE_TAG}")
+                            docker.build("${FRONTEND_IMAGE}:latest")
+                        }
                     }
                 }
             }
