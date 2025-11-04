@@ -54,10 +54,13 @@ MongoDB    NLP Models
 - **ASGI Server**: Uvicorn
 
 ### DevOps
-- **Containerization**: Docker
-- **Orchestration**: Kubernetes
-- **CI/CD**: Jenkins
+- **Containerization**: Docker & Docker Compose
+- **Orchestration**: Kubernetes (Docker Desktop)
+- **CI/CD**: Jenkins Pipeline
+- **Container Registry**: Docker Hub
+- **Static Hosting**: AWS S3
 - **Proxy**: Nginx
+- **Secrets Management**: Kubernetes Secrets
 
 ## 📁 Project Structure
 
@@ -382,6 +385,77 @@ VITE_API_URL=http://localhost:8000
 
 ## 🚀 Deployment
 
+### CI/CD Pipeline with Jenkins
+
+The project includes a complete Jenkins pipeline that automates:
+- Docker image building for backend and frontend
+- Pushing images to Docker Hub
+- Deploying frontend to AWS S3
+- Deploying backend to Kubernetes
+- Health checks and monitoring
+
+**Jenkins Pipeline Stages:**
+1. **Checkout** - Clone repository from GitHub
+2. **Build Backend** - Build Docker image for FastAPI backend
+3. **Build Frontend** - Build Docker image for React frontend
+4. **Test Backend** - Run backend tests
+5. **Push to Registry** - Push images to Docker Hub (sh9506/hirerank-*)
+6. **Deploy to S3** - Deploy frontend to AWS S3 static hosting
+7. **Deploy to Kubernetes** - Deploy to local K8s cluster
+8. **Health Check** - Verify deployments and display status
+
+**Setup Jenkins Pipeline:**
+
+1. **Prerequisites:**
+   ```bash
+   # Start Jenkins in Docker
+   docker run -d \
+     --name jenkins \
+     -p 8080:8080 -p 50000:50000 \
+     -v jenkins_home:/var/jenkins_home \
+     -v /var/run/docker.sock:/var/run/docker.sock \
+     jenkins/jenkins:lts
+   ```
+
+2. **Configure Credentials in Jenkins:**
+   - Docker Hub: `docker-hub-credentials` (Username + Password/Token)
+   - AWS: `aws-access-key-id` and `aws-secret-access-key` (Secret text)
+
+3. **Create Kubernetes Secret for Gemini API:**
+   ```bash
+   kubectl create secret generic gemini-api-secret \
+     --from-literal=GEMINI_API_KEY='your_gemini_api_key'
+   ```
+
+4. **Create Jenkins Pipeline Job:**
+   - New Item → Pipeline
+   - Pipeline from SCM → Git
+   - Repository URL: https://github.com/sha9506/HireRank
+   - Script Path: Jenkinsfile
+
+5. **Build the Pipeline:**
+   - Click "Build Now"
+   - Monitor console output for deployment status
+
+**Deployment Targets:**
+
+- **Frontend:** http://hirerank-devops.s3-website-ap-south-1.amazonaws.com
+- **Backend (ngrok):** https://your-ngrok-url.ngrok-free.dev
+- **Kubernetes:** Local Docker Desktop cluster
+
+### AWS S3 Static Hosting
+
+Frontend is automatically deployed to AWS S3 via Jenkins pipeline:
+
+```bash
+# Manual S3 deployment (if needed)
+aws s3 mb s3://hirerank-devops --region ap-south-1
+aws s3 website s3://hirerank-devops \
+  --index-document index.html \
+  --error-document index.html
+aws s3 sync frontend/dist/ s3://hirerank-devops --delete
+```
+
 ### Development/Demo with ngrok
 
 For quick demos or testing with external access:
@@ -393,7 +467,27 @@ For quick demos or testing with external access:
 
 **Note:** Free ngrok URLs change on each restart. For persistent URLs, consider upgrading to ngrok's paid plan.
 
-### AWS EKS
+### Kubernetes Local Deployment
+
+```bash
+# Apply all manifests
+kubectl apply -f deploy/mongo-deployment.yaml
+kubectl apply -f deploy/backend-deployment.yaml
+kubectl apply -f deploy/frontend-deployment.yaml
+kubectl apply -f deploy/services.yaml
+kubectl apply -f deploy/ingress.yaml
+
+# Check deployment status
+kubectl get pods
+kubectl get services
+kubectl get nodes
+
+# View logs
+kubectl logs deployment/backend
+kubectl logs deployment/frontend
+```
+
+### AWS EKS (Production)
 ```bash
 # Create EKS cluster
 eksctl create cluster --name hirerank-cluster --region us-east-1
@@ -451,6 +545,10 @@ Project Link: [https://github.com/sha9506/HireRank](https://github.com/sha9506/H
 - [x] Real-time analysis with progress tracking
 - [x] Dark/Light theme support
 - [x] Docker and Kubernetes deployment
+- [x] Jenkins CI/CD pipeline automation
+- [x] AWS S3 static hosting for frontend
+- [x] Docker Hub container registry integration
+- [x] Kubernetes secrets management
 - [x] ngrok integration for public demos
 
 ### In Progress 🚧
@@ -470,4 +568,3 @@ Project Link: [https://github.com/sha9506/HireRank](https://github.com/sha9506/H
 
 ---
 
-**Built with ❤️ using React, FastAPI, and AI**
