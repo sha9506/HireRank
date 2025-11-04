@@ -126,8 +126,17 @@ pipeline {
                 echo 'Performing health checks...'
                 sh '''
                     sleep 30
-                    kubectl get pods
+                    echo "=== Kubernetes Nodes ==="
+                    kubectl get nodes -o wide
+                    echo ""
+                    echo "=== Kubernetes Pods ==="
+                    kubectl get pods -o wide
+                    echo ""
+                    echo "=== Kubernetes Services ==="
                     kubectl get services
+                    echo ""
+                    echo "=== Kubernetes Deployments ==="
+                    kubectl get deployments
                 '''
             }
         }
