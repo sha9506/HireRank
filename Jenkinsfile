@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_REGISTRY = 'docker.io'
+        DOCKER_REGISTRY = 'https://index.docker.io/v1/'
         DOCKER_USERNAME = 'sh9506'
         DOCKER_CREDENTIALS = credentials('docker-hub-credentials')
         BACKEND_IMAGE = "${DOCKER_USERNAME}/hirerank-backend"
@@ -59,7 +59,7 @@ pipeline {
             steps {
                 echo 'Pushing images to Docker registry...'
                 script {
-                    docker.withRegistry("https://${DOCKER_REGISTRY}", 'docker-hub-credentials') {
+                    docker.withRegistry("${DOCKER_REGISTRY}", 'docker-hub-credentials') {
                         docker.image("${BACKEND_IMAGE}:${IMAGE_TAG}").push()
                         docker.image("${BACKEND_IMAGE}:latest").push()
                         docker.image("${FRONTEND_IMAGE}:${IMAGE_TAG}").push()
