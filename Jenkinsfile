@@ -131,10 +131,6 @@ pipeline {
                     kubectl apply -f deploy/frontend-deployment.yaml
                     kubectl apply -f deploy/services.yaml
                     kubectl apply -f deploy/ingress.yaml
-                    
-                    # Wait for deployments to be ready
-                    kubectl rollout status deployment/backend
-                    kubectl rollout status deployment/frontend
                 '''
             }
         }
