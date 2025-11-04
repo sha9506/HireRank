@@ -88,8 +88,8 @@ pipeline {
                     npm install
                     npm run build
                     export AWS_DEFAULT_REGION=ap-south-1
-                    aws s3 sync build/ s3://your-s3-bucket-name --delete
-                    echo "Check your site at: http://your-s3-bucket-name.s3-website-ap-south-1.amazonaws.com"
+                    aws s3 sync dist/ s3://hirerank-devops --delete
+                    echo "Check your site at: http://hirerank-devops.s3-website-ap-south-1.amazonaws.com"
                     '''
                 }
             }
